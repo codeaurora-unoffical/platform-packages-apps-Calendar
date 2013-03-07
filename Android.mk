@@ -35,7 +35,6 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 LOCAL_AAPT_FLAGS := --auto-add-overlay
 LOCAL_AAPT_FLAGS += --extra-packages com.android.ex.chips
 
-LOCAL_DEX_PREOPT := false
 include $(BUILD_PACKAGE)
 
 # Use the following include to make our test apk.
