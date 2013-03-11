@@ -734,7 +734,6 @@ public class EditEventFragment extends Fragment implements EventHandler {
             final View focusedView = mContext.getCurrentFocus();
             if (focusedView != null) {
                 mInputMethodManager.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
-                focusedView.clearFocus();
             }
         }
     }
