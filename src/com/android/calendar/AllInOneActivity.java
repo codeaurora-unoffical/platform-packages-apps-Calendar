@@ -102,6 +102,8 @@ public class AllInOneActivity extends Activity implements EventHandler,
     private static final String BUNDLE_KEY_EVENT_ID = "key_event_id";
     private static final String BUNDLE_KEY_RESTORE_VIEW = "key_restore_view";
     private static final String BUNDLE_KEY_CHECK_ACCOUNTS = "key_check_for_accounts";
+    private static final String BUNDLE_KEY_CHECK_BACK_TO_PREVIEW = "key_check_for_back_to_preview";
+    private static final String BUNDLE_KEY_RESTORE_PREVIEW = "key_restore_preview";
     private static final int HANDLER_KEY = 0;
     private static float mScale = 0;
 
@@ -659,6 +661,23 @@ public class AllInOneActivity extends Activity implements EventHandler,
             }
         }
         outState.putBoolean(BUNDLE_KEY_CHECK_ACCOUNTS, mCheckForAccounts);
+        outState.putBoolean(BUNDLE_KEY_CHECK_BACK_TO_PREVIEW, mBackToPreviousView);
+        outState.putInt(BUNDLE_KEY_RESTORE_PREVIEW, mPreviousView);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(BUNDLE_KEY_RESTORE_PREVIEW)) {
+            mPreviousView = savedInstanceState.getInt(BUNDLE_KEY_RESTORE_PREVIEW);
+        }
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(BUNDLE_KEY_CHECK_BACK_TO_PREVIEW)) {
+            mBackToPreviousView = savedInstanceState
+                    .getBoolean(BUNDLE_KEY_CHECK_BACK_TO_PREVIEW);
+        }
     }
 
     @Override
