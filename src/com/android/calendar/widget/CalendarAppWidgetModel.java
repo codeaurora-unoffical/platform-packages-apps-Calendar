@@ -358,7 +358,7 @@ class CalendarAppWidgetModel {
         // Compute a human-readable string for the start time of the event
         StringBuilder whenString = new StringBuilder();
         int visibWhen;
-        int flags = DateUtils.FORMAT_ABBREV_ALL;
+        int flags = DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_ABBREV_MONTH;
         visibWhen = View.VISIBLE;
         if (allDay) {
             flags |= DateUtils.FORMAT_SHOW_DATE;
