@@ -872,8 +872,7 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
         mPmString = DateUtils.getAMPMString(Calendar.PM).toUpperCase();
         String[] ampm = {mAmString, mPmString};
         p.setTextSize(AMPM_TEXT_SIZE);
-        mHoursWidth = Math.max(HOURS_MARGIN, computeMaxStringWidth(mHoursWidth, ampm, p)
-                + HOURS_RIGHT_MARGIN);
+        mHoursWidth = computeMaxStringWidth(mHoursWidth, ampm, p) + HOURS_MARGIN;
         mHoursWidth = Math.max(MIN_HOURS_WIDTH, mHoursWidth);
 
         LayoutInflater inflater;
@@ -2417,14 +2416,14 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
             text = mPmString;
         }
         int y = mFirstCell + mFirstHourOffset + 2 * mHoursTextHeight + HOUR_GAP;
-        canvas.drawText(text, HOURS_LEFT_MARGIN, y, p);
+        canvas.drawText(text, mHoursWidth - HOURS_RIGHT_MARGIN, y, p);
 
         if (mFirstHour < 12 && mFirstHour + mNumHours > 12) {
             // Also draw the "PM"
             text = mPmString;
             y = mFirstCell + mFirstHourOffset + (12 - mFirstHour) * (mCellHeight + HOUR_GAP)
                     + 2 * mHoursTextHeight + HOUR_GAP;
-            canvas.drawText(text, HOURS_LEFT_MARGIN, y, p);
+            canvas.drawText(text, mHoursWidth - HOURS_RIGHT_MARGIN , y, p);
         }
     }
 
@@ -2532,7 +2531,7 @@ public class DayView extends View implements View.OnCreateContextMenuListener,
 
         for (int i = 0; i < 24; i++) {
             String time = mHourStrs[i];
-            canvas.drawText(time, HOURS_LEFT_MARGIN, y, p);
+            canvas.drawText(time, mHoursWidth - HOURS_RIGHT_MARGIN, y, p);
             y += mCellHeight + HOUR_GAP;
         }
     }
