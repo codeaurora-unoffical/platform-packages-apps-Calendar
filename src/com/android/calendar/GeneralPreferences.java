@@ -169,10 +169,9 @@ public class GeneralPreferences extends PreferenceFragment implements
         mWeekStart.setSummary(mWeekStart.getEntry());
         mDefaultReminder.setSummary(mDefaultReminder.getEntry());
 
-        if (mTimezones == null) {
-            mTimezones = (new TimezoneAdapter(activity, tz, System.currentTimeMillis()))
-                    .getAllTimezones();
-        }
+        // When onCreate is called every time, get res string for timezone.
+        mTimezones = (new TimezoneAdapter(activity, tz, System.currentTimeMillis()))
+                .getAllTimezones();
         mHomeTZ.setEntryValues(mTimezones[0]);
         mHomeTZ.setEntries(mTimezones[1]);
         CharSequence tzName = mHomeTZ.getEntry();
