@@ -122,6 +122,7 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
     protected static final String BUNDLE_KEY_END_MILLIS = "key_end_millis";
     protected static final String BUNDLE_KEY_IS_DIALOG = "key_fragment_is_dialog";
     protected static final String BUNDLE_KEY_DELETE_DIALOG_VISIBLE = "key_delete_dialog_visible";
+    protected static final String BUNDLE_KEY_DELETE_DIALOG_CHOICE = "key_delete_dialog_choice";
     protected static final String BUNDLE_KEY_WINDOW_STYLE = "key_window_style";
     protected static final String BUNDLE_KEY_ATTENDEE_RESPONSE = "key_attendee_response";
 
@@ -290,6 +291,7 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
     private int mNumOfAttendees;
     private EditResponseHelper mEditResponseHelper;
     private boolean mDeleteDialogVisible = false;
+    private int mDeleteDialogChoice = -1;
     private DeleteEventHelper mDeleteHelper;
 
     private int mOriginalAttendeeResponse;
@@ -682,7 +684,7 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
                     DIALOG_WINDOW_STYLE);
             mDeleteDialogVisible =
                 savedInstanceState.getBoolean(BUNDLE_KEY_DELETE_DIALOG_VISIBLE,false);
-
+                mDeleteDialogChoice = savedInstanceState.getInt(BUNDLE_KEY_DELETE_DIALOG_CHOICE, -1);
         }
 
         if (mWindowStyle == DIALOG_WINDOW_STYLE) {
@@ -928,6 +930,7 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
         outState.putInt(BUNDLE_KEY_WINDOW_STYLE, mWindowStyle);
         outState.putBoolean(BUNDLE_KEY_DELETE_DIALOG_VISIBLE, mDeleteDialogVisible);
         outState.putInt(BUNDLE_KEY_ATTENDEE_RESPONSE, mAttendeeResponseFromIntent);
+        outState.putInt(BUNDLE_KEY_DELETE_DIALOG_CHOICE, mDeleteDialogChoice);
     }
 
 
@@ -2017,6 +2020,7 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
         // This is done to get the same behavior on OnResume since the AlertDialog is gone on
         // rotation but not if you press the HOME key
         if (mDeleteDialogVisible && mDeleteHelper != null) {
+            mDeleteDialogChoice = mDeleteHelper.getWhichDelete();
             mDeleteHelper.dismissAlertDialog();
             mDeleteHelper = null;
         }
@@ -2039,7 +2043,7 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
                     mContext, mActivity,
                     !mIsDialog && !mIsTabletConfig /* exitWhenDone */);
             mDeleteHelper.setOnDismissListener(createDeleteOnDismissListener());
-            mDeleteHelper.delete(mStartMillis, mEndMillis, mEventId, -1, onDeleteRunnable);
+            mDeleteHelper.delete(mStartMillis, mEndMillis, mEventId, mDeleteDialogChoice, onDeleteRunnable);
         }
     }
 
