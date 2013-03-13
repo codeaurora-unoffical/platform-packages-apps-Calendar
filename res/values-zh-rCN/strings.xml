@@ -220,4 +220,7 @@
   </plurals>
     <string name="acessibility_selected_marker_description" msgid="3010149843148810768">"所选活动"</string>
     <string name="do_not_check" msgid="7815441673853466129">"请勿选中 -&gt;"</string>
+
+    <string name="account_removed">"帐户已被删除"</string>
+
 </resources>
