@@ -277,6 +277,8 @@ public class AlertReceiver extends BroadcastReceiver {
             if (snoozeIntent != null) {
                 notificationBuilder.addAction(R.drawable.ic_alarm_holo_dark,
                         resources.getString(R.string.snooze_label), snoozeIntent);
+            // Create a dissmiss button.
+            notificationBuilder.addAction(0,resources.getString(R.string.dismiss_label), deleteIntent);
             }
             if (emailIntent != null) {
                 notificationBuilder.addAction(R.drawable.ic_menu_email_holo_dark,
