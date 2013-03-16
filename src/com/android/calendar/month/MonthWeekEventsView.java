@@ -801,14 +801,30 @@ public class MonthWeekEventsView extends SimpleWeekView {
       		isHoliday = true;
 		if((mSolarFeast.containsKey(beComparedSolarDate)) && (mLunarFeast.containsKey(beComparedLunarDate))) {
 			valueSolarFeast = mSolarFeast.get(beComparedSolarDate);
-			solarFeastName = mFeastArray[Integer.parseInt(valueSolarFeast, 10)];
-			valueLunarFeast = mLunarFeast.get(beComparedLunarDate);
+			
+			int index = Integer.parseInt(valueSolarFeast, 10);
+			solarFeastName = mFeastArray[index];
+     			if((index == 14 && time.year < 1979) || (index == 17 && time.year < 1985)){
+     				valueLunarFeast = mLunarFeast.get(beComparedLunarDate);
+     				solarFeastName = mFeastArray[Integer.parseInt(valueLunarFeast, 10)];
+     				if(mToLunar.isLeapMonth()){
+     					solarFeastName = "";
+     					isHoliday = false;
+     				}
+     			}
 		} else if((mSolarFeast.containsKey(beComparedSolarDate)) && (!mLunarFeast.containsKey(beComparedLunarDate))) {
 			valueSolarFeast = mSolarFeast.get(beComparedSolarDate);
-			solarFeastName = mFeastArray[Integer.parseInt(valueSolarFeast, 10)];	
+			int index = Integer.parseInt(valueSolarFeast, 10);
+			solarFeastName = mFeastArray[index];
+			if((index == 14 && time.year < 1979) || (index == 17 && time.year < 1985)){
+				solarFeastName = "";
+			}
 		} else if((!mSolarFeast.containsKey(beComparedSolarDate)) && (mLunarFeast.containsKey(beComparedLunarDate))) {
 			valueLunarFeast = mLunarFeast.get(beComparedLunarDate);
 			solarFeastName = mFeastArray[Integer.parseInt(valueLunarFeast, 10)];
+			if(mToLunar.isLeapMonth()){			
+				solarFeastName = "";
+			}
 		} else {
 			isHoliday = false;
 		}
