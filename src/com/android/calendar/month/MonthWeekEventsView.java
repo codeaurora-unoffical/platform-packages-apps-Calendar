@@ -19,6 +19,7 @@ package com.android.calendar.month;
 import com.android.calendar.Event;
 import com.android.calendar.R;
 import com.android.calendar.Utils;
+import com.android.calendar.lunar.ToLunarCalendar;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -53,6 +54,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.android.calendar.month.MonthByWeekFragment.mSolarFeast;
+import static com.android.calendar.month.MonthByWeekFragment.mLunarFeast;
+import static com.android.calendar.month.MonthByWeekFragment.mFeastArray;
 public class MonthWeekEventsView extends SimpleWeekView {
 
     private static final String TAG = "MonthView";
@@ -69,6 +73,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
     private static int TEXT_SIZE_MORE_EVENTS = 12;
     private static int TEXT_SIZE_MONTH_NAME = 14;
     private static int TEXT_SIZE_WEEK_NUM = 12;
+    private static final int LUNAR_TEXT_SIZE_NORMAL = 15;
 
     private static int DNA_MARGIN = 4;
     private static int DNA_ALL_DAY_HEIGHT = 4;
@@ -178,6 +183,11 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     private final TodayAnimatorListener mAnimatorListener = new TodayAnimatorListener();
 
+    private ToLunarCalendar mToLunar;
+    private boolean isLunarJieqi = false;    
+    private boolean isLunarFirst = false;    
+    private boolean isHoliday = false;
+    private Context mContext;
     class TodayAnimatorListener extends AnimatorListenerAdapter {
         private volatile Animator mAnimator = null;
         private volatile boolean mFadingIn = false;
@@ -249,6 +259,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
      */
     public MonthWeekEventsView(Context context) {
         super(context);
+        mContext=context;
+        mToLunar = new ToLunarCalendar(context);
     }
 
     // Sets the list of events for this week. Takes a sorted list of arrays
@@ -674,6 +686,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
     @Override
     protected void drawWeekNums(Canvas canvas) {
         int y;
+        boolean isLandscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
 
         int i = 0;
         int offset = -1;
@@ -714,7 +728,142 @@ public class MonthWeekEventsView extends SimpleWeekView {
             if (isBold) {
                 mMonthNumPaint.setFakeBoldText(isBold = false);
             }
+            final String localLan = mContext.getResources().getConfiguration().locale.getLanguage();
+            boolean isChinese = localLan.equals("zh");
+            if (isChinese) {
+                String strLunar = "";
+                isLunarJieqi = false;
+                isLunarFirst = false;
+                isHoliday = false;
+                int dayPosition = mShowWeekNum ? i - 1: i;
+                int day = mFirstJulianDay + dayPosition;
+                Time time = new Time(mTimeZone);
+                if (mWeek == 0) {
+                    // This week is weird...
+                    if (day < Time.EPOCH_JULIAN_DAY) {
+                        day++;
+                        time.setJulianDay(day);
+                        if(day == Time.EPOCH_JULIAN_DAY){
+                            time.set(31,11,1969);}
+                    } else if (day == Time.EPOCH_JULIAN_DAY) {
+                        time.set(1, 0, 1970);
+                    }else if(day > Time.EPOCH_JULIAN_DAY){
+                          time.setJulianDay(day);
+                    }
+                } else {
+                    time.setJulianDay(day);
+                }
+		 mToLunar.transform(time.year, time.month + 1, time.monthDay);
+		 String strLunarjieqi;
+		 strLunarjieqi = mToLunar.getLunarHoliday(); // get lunar holiday
+		 isLunarJieqi = true;
+		 if(strLunarjieqi == null)
+		     {
+		            strLunarjieqi = mToLunar.getLunarDateString(); // get lunar day
+		            isLunarJieqi = false;
+		     }
+		if(mToLunar.getLunarDay() == 1)
+		      {
+		            isLunarFirst = true;
+		       }
+		String valueSolarFeast="" ;
+		String solarFeastName="" ;
+		String valueLunarFeast="";
+	        String beComparedSolarDate = "";
+		String beComparedLunarDate = "";
+		int lunarMonth = mToLunar.getLunarMonth();
+		int lunarDay = mToLunar.getLunarDay();
+	
+		if(Integer.toString(time.month + 1).length() == 1) {
+			beComparedSolarDate = ("0" + Integer.toString(time.month + 1));
+		}else {
+			beComparedSolarDate = Integer.toString(time.month + 1);
+		}
+
+		if(Integer.toString(time.monthDay).length() == 1) {
+			beComparedSolarDate += ("0" + Integer.toString(time.monthDay));
+		}else {
+			beComparedSolarDate += Integer.toString(time.monthDay);
+		}
+
+		if(Integer.toString(lunarMonth).length() == 1) {
+			beComparedLunarDate = ("0" + Integer.toString(lunarMonth));
+		}else {
+			beComparedLunarDate = Integer.toString(lunarMonth);
+		}
+
+		if(Integer.toString(lunarDay).length() == 1) {
+			beComparedLunarDate += ("0" + Integer.toString(lunarDay));
+		}else {
+			beComparedLunarDate += Integer.toString(lunarDay);
+		}
+
+      		isHoliday = true;
+		if((mSolarFeast.containsKey(beComparedSolarDate)) && (mLunarFeast.containsKey(beComparedLunarDate))) {
+			valueSolarFeast = mSolarFeast.get(beComparedSolarDate);
+			
+			int index = Integer.parseInt(valueSolarFeast, 10);
+			solarFeastName = mFeastArray[index];
+     			if((index == 14 && time.year < 1979) || (index == 17 && time.year < 1985)){
+     				valueLunarFeast = mLunarFeast.get(beComparedLunarDate);
+     				solarFeastName = mFeastArray[Integer.parseInt(valueLunarFeast, 10)];
+     				if(mToLunar.isLeapMonth()){
+     					solarFeastName = "";
+     					isHoliday = false;
+     				}
+     			}
+		} else if((mSolarFeast.containsKey(beComparedSolarDate)) && (!mLunarFeast.containsKey(beComparedLunarDate))) {
+			valueSolarFeast = mSolarFeast.get(beComparedSolarDate);
+			int index = Integer.parseInt(valueSolarFeast, 10);
+			solarFeastName = mFeastArray[index];
+			if((index == 14 && time.year < 1979) || (index == 17 && time.year < 1985)){
+				solarFeastName = "";
+			}
+		} else if((!mSolarFeast.containsKey(beComparedSolarDate)) && (mLunarFeast.containsKey(beComparedLunarDate))) {
+			valueLunarFeast = mLunarFeast.get(beComparedLunarDate);
+			solarFeastName = mFeastArray[Integer.parseInt(valueLunarFeast, 10)];
+			if(mToLunar.isLeapMonth()){			
+				solarFeastName = "";
+			}
+		} else {
+			isHoliday = false;
+		}
+		p.setTextSize(LUNAR_TEXT_SIZE_NORMAL); 
+		if (isFocusMonth) {
+                       if (isHoliday) {
+                             p.setColor(Color.RED);
+                            if (isLandscape) {
+                                  canvas.drawText(solarFeastName, x-34, y+18, p);
+                             }else {
+                                canvas.drawText(solarFeastName, x-34 , y+35, p);
+                            }
+                       }
+           
+                     if (isLunarJieqi) {
+                            p.setColor(0xffff8b23);
+                     } else if (isLunarFirst) {
+                            p.setColor(Color.RED);
+                     } else {
+                           p.setColor(mMonthNumColor);
+                        }          
+                    if (isLandscape) {
+                        canvas.drawText(strLunarjieqi, x-34, y+3, p);
+                    }else {
+                       canvas.drawText(strLunarjieqi, x-34 , y+15, p);
+                    }
+           }else{
+	            p.setColor(mMonthNumOtherColor);
+		 if (isLandscape) {
+	            canvas.drawText(solarFeastName, x-34, y+18, p);
+                    canvas.drawText(strLunarjieqi, x-34, y+3, p);
+                }
+                else {
+		    canvas.drawText(solarFeastName, x-34 , y+35, p);
+                    canvas.drawText(strLunarjieqi, x-34 , y+15, p);
+                }
+           }
         }
+      }
     }
 
     protected void drawEvents(Canvas canvas) {

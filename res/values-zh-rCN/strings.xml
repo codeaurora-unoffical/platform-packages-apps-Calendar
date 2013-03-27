@@ -184,6 +184,28 @@
     <item quantity="one" msgid="8971334808414201327">"+1"</item>
     <item quantity="other" msgid="1997405398178470838">"+<xliff:g id="NUMBER">%d</xliff:g>"</item>
   </plurals>
+  <string-array name="feast">
+        <item>元旦</item>
+        <item>情人节</item> 
+        <item>妇女节</item>
+        <item>劳动节</item>
+        <item>青年节</item>
+        <item>儿童节</item>
+        <item>国庆节</item>
+	<item>春节</item>
+        <item>元宵节</item>
+        <item>端午节</item>
+        <item>中秋节</item>
+        <item>除夕</item>
+        <item>七夕</item>
+        <item>重阳节</item>
+        <item>植树节</item>
+        <item>建党节</item>
+        <item>建军节</item>
+        <item>教师节</item>
+        <item>圣诞节</item>
+		
+    </string-array>
     <string name="gadget_no_events" msgid="5209110911088302855">"最近没有任何日历活动"</string>
     <string name="copy_db" msgid="437691290566699292">"发送数据库"</string>
     <string name="directory_searching_fmt" msgid="1232037509095606687">"正在搜索 <xliff:g id="DOMAIN">%s</xliff:g>…"</string>
