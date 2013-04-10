@@ -833,7 +833,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
                        if (isHoliday) {
                              p.setColor(Color.RED);
                             if (isLandscape) {
-                                  canvas.drawText(solarFeastName, x-34, y+18, p);
+                                  canvas.drawText(solarFeastName, x-34, y+28, p);
                              }else {
                                 canvas.drawText(solarFeastName, x-34 , y+35, p);
                             }
@@ -847,15 +847,15 @@ public class MonthWeekEventsView extends SimpleWeekView {
                            p.setColor(mMonthNumColor);
                         }          
                     if (isLandscape) {
-                        canvas.drawText(strLunarjieqi, x-34, y+3, p);
+                        canvas.drawText(strLunarjieqi, x-34, y+13, p);
                     }else {
                        canvas.drawText(strLunarjieqi, x-34 , y+15, p);
                     }
            }else{
 	            p.setColor(mMonthNumOtherColor);
 		 if (isLandscape) {
-	            canvas.drawText(solarFeastName, x-34, y+18, p);
-                    canvas.drawText(strLunarjieqi, x-34, y+3, p);
+	            canvas.drawText(solarFeastName, x-34, y+28, p);
+                    canvas.drawText(strLunarjieqi, x-34, y+13, p);
                 }
                 else {
 		    canvas.drawText(solarFeastName, x-34 , y+35, p);
