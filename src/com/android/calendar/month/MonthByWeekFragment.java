@@ -52,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import android.content.res.XmlResourceParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class MonthByWeekFragment extends SimpleDayPickerFragment implements
         CalendarController.EventHandler, LoaderManager.LoaderCallbacks<Cursor>, OnScrollListener,
@@ -90,7 +92,12 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
     private int mEventsLoadingDelay;
     private boolean mShowCalendarControls;
     private boolean mIsDetached;
+    public static HashMap<String,String> mSolarFeast;
+    private static final String XMLTAG_SOLARFEAST = "solarfeast";
+    public static HashMap<String,String> mLunarFeast;
+    private static final String XMLTAG_LUNARFEAST = "lunarfeast";
 
+    public static String[] mFeastArray;
     private final Runnable mTZUpdater = new Runnable() {
         @Override
         public void run() {
@@ -281,6 +288,9 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
         if (!mIsMiniMonth) {
             mListView.setBackgroundColor(getResources().getColor(R.color.month_bgcolor));
         }
+		mSolarFeast = getSolarfeast();
+        mLunarFeast = getLunarfeast();
+        mFeastArray = mContext.getResources().getStringArray(R.array.feast);
 
         // To get a smoother transition when showing this fragment, delay loading of events until
         // the fragment is expended fully and the calendar controls are gone.
@@ -290,6 +300,73 @@ public class MonthByWeekFragment extends SimpleDayPickerFragment implements
             mLoader = (CursorLoader) getLoaderManager().initLoader(0, null, this);
         }
         mAdapter.setListView(mListView);
+    }
+	
+	private HashMap<String, String> getSolarfeast() {
+        HashMap<String, String> myData = new HashMap<String, String>();
+        try {
+            XmlResourceParser xrp = getResources().getXml(R.xml.solarfeast);
+            while (xrp.next() != XmlResourceParser.START_TAG);
+            xrp.next();
+            while (xrp.getEventType() != XmlResourceParser.END_TAG) {
+                while (xrp.getEventType() != XmlResourceParser.START_TAG) {
+                    if (xrp.getEventType() == XmlResourceParser.END_DOCUMENT) {
+                        return myData;
+                    }
+                    xrp.next();
+                }
+                if (xrp.getName().equals(XMLTAG_SOLARFEAST)) {
+                    String keyDate = xrp.getAttributeValue(0);
+                    String valueFeast = xrp.nextText();
+                    myData.put(keyDate, valueFeast);
+                }
+                while (xrp.getEventType() != XmlResourceParser.END_TAG) {
+                    xrp.next();
+                }
+                xrp.next();
+            }
+            xrp.close();
+        } catch (XmlPullParserException xppe) {
+            Log.e(TAG, "Ill-formatted timezones.xml file");
+        } catch (java.io.IOException ioe) {
+            Log.e(TAG, "Unable to read timezones.xml file");
+        }
+
+        return myData;
+    }
+
+    private HashMap<String, String> getLunarfeast() {
+        HashMap<String, String> myData = new HashMap<String, String>();
+        try {
+            XmlResourceParser xrp = getResources().getXml(R.xml.lunarfeast);
+            while (xrp.next() != XmlResourceParser.START_TAG)
+                ;
+            xrp.next();
+            while (xrp.getEventType() != XmlResourceParser.END_TAG) {
+                while (xrp.getEventType() != XmlResourceParser.START_TAG) {
+                    if (xrp.getEventType() == XmlResourceParser.END_DOCUMENT) {
+                        return myData;
+                    }
+                    xrp.next();
+                }
+                if (xrp.getName().equals(XMLTAG_LUNARFEAST)) {
+                    String keyDate = xrp.getAttributeValue(0);
+                    String valueFeast = xrp.nextText();
+                    myData.put(keyDate, valueFeast);
+                }
+                while (xrp.getEventType() != XmlResourceParser.END_TAG) {
+                    xrp.next();
+                }
+                xrp.next();
+            }
+            xrp.close();
+        } catch (XmlPullParserException xppe) {
+            Log.e(TAG, "Ill-formatted timezones.xml file");
+        } catch (java.io.IOException ioe) {
+            Log.e(TAG, "Unable to read timezones.xml file");
+        }
+
+        return myData;
     }
 
     public MonthByWeekFragment() {

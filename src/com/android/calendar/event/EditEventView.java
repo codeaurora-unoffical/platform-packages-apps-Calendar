@@ -41,6 +41,7 @@ import android.provider.CalendarContract;
 import android.provider.Settings;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -72,6 +73,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.android.calendar.CalendarEventModel;
 import com.android.calendar.CalendarEventModel.Attendee;
@@ -217,7 +219,7 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
 
     private static StringBuilder mSB = new StringBuilder(50);
     private static Formatter mF = new Formatter(mSB, Locale.getDefault());
-
+    private static final int MAX_LENGTH = 200;
     /* This class is used to update the time buttons. */
     private class TimeListener implements OnTimeSetListener {
         private View mView;
@@ -979,6 +981,24 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
         mStartHomeGroup = view.findViewById(R.id.from_row_home_tz);
         mEndHomeGroup = view.findViewById(R.id.to_row_home_tz);
         mAttendeesList = (MultiAutoCompleteTextView) view.findViewById(R.id.attendees);
+        TextWatcher folderNameWatcher = new TextWatcher(){
+            public void beforeTextChanged(CharSequence s,int start,int before,int after){ }
+            public void onTextChanged(CharSequence s,int start, int before, int count){
+                         if(s.length()==MAX_LENGTH){
+                            Toast t = Toast.makeText(mActivity,R.string.content_to_limit,Toast.LENGTH_SHORT);
+                            t.show();}
+            }
+            public void afterTextChanged(android.text.Editable s){ }
+      };
+       mTitleTextView.addTextChangedListener(folderNameWatcher); 
+       mTitleTextView.setFilters(new InputFilter[] {
+               new InputFilter.LengthFilter(MAX_LENGTH)});
+       mLocationTextView.addTextChangedListener(folderNameWatcher);    
+       mLocationTextView.setFilters(new InputFilter[] {
+               new InputFilter.LengthFilter(MAX_LENGTH)});
+       mDescriptionTextView.addTextChangedListener(folderNameWatcher);
+       mDescriptionTextView.setFilters(new InputFilter[] {
+               new InputFilter.LengthFilter(MAX_LENGTH)});
 
         mTitleTextView.setTag(mTitleTextView.getBackground());
         mTitleTextView.setAdapter(new TitleAdapter(activity));

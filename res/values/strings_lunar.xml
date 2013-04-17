@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!--
+    <string name="hello">Hello World, CalendarExchange</string>
+    <string name="app_name">CalendarExchange</string>
+    -->
+	<string name="app_name_cn">农历</string>
+	<string name="leap">闰</string>
+	<string name="month">月</string>
+	<string name="year">年</string>
+	
+	<string name="mon">周一</string>
+	<string name="tue">周二</string>
+	<string name="wes">周三</string>
+	<string name="thu">周四</string>
+	<string name="fri">周五</string>
+	<string name="sat">周六</string>
+	<string name="sun">周日</string>
+	
+	
+	
+	
+	<string-array name="jieqi_array">
+		<item>小寒</item><item>大寒</item><item>立春</item><item>雨水</item><item>惊蛰</item>
+		<item>春分</item><item>清明</item><item>谷雨</item><item>立夏</item><item>小满</item>
+		<item>芒种</item><item>夏至</item><item>小暑</item><item>大暑</item><item>立秋</item>
+		<item>处暑</item><item>白露</item><item>秋分</item><item>寒露</item><item>霜降</item>
+		<item>立冬</item><item>小雪</item><item>大雪</item><item>冬至</item>
+	</string-array>
+	
+	<string-array name="chinese_number_day">
+		<item>初一</item><item>初二</item><item>初三</item><item>初四</item><item>初五</item>
+		<item>初六</item><item>初七</item><item>初八</item><item>初九</item><item>初十</item>
+		<item>十一</item><item>十二</item><item>十三</item><item>十四</item><item>十五</item>
+		<item>十六</item><item>十七</item><item>十八</item><item>十九</item><item>二十</item>
+		<item>廿一</item><item>廿二</item><item>廿三</item><item>廿四</item><item>廿五</item>
+		<item>廿六</item><item>廿七</item><item>廿八</item><item>廿九</item><item>三十</item>
+	</string-array>
+	
+	<string-array name="chinese_number_month">
+		<item>正月</item><item>二月</item><item>三月</item><item>四月</item><item>五月</item>
+		<item>六月</item><item>七月</item><item>八月</item><item>九月</item><item>十月</item>
+		<item>十一月</item><item>腊月</item>
+	</string-array>
+	
+	<string-array name="gan">
+		<item>甲</item><item>乙</item><item>丙</item><item>丁</item><item>戊</item>
+		<item>己</item><item>庚</item><item>辛</item><item>壬</item><item>癸</item>
+	</string-array>
+	
+	<string-array name="zhi">
+		<item>子</item><item>丑</item><item>寅</item><item>卯</item><item>辰</item>
+		<item>巳</item><item>午</item><item>未</item><item>申</item><item>酉</item>
+		<item>戌</item><item>亥</item>
+	</string-array>
+	
+	<string-array name="animals">
+		<item>鼠年</item><item>牛年</item><item>虎年</item><item>兔年</item><item>龙年</item>
+		<item>蛇年</item><item>马年</item><item>羊年</item><item>猴年</item><item>鸡年</item>
+		<item>狗年</item><item>猪年</item>
+	</string-array>
+	
+</resources>
