@@ -59,7 +59,7 @@ public class SelectSyncedCalendarsMultiAccountAdapter extends CursorTreeAdapter 
     private final ContentResolver mResolver;
     private final SelectSyncedCalendarsMultiAccountActivity mActivity;
     private final View mView;
-    private final static Runnable mStopRefreshing = new Runnable() {
+    private final Runnable mStopRefreshing = new Runnable() {
         public void run() {
             mRefresh = false;
         }
@@ -75,10 +75,10 @@ public class SelectSyncedCalendarsMultiAccountAdapter extends CursorTreeAdapter 
         = new HashMap<Long, Boolean>();
 
     // This is for keeping MatrixCursor copies so that we can requery in the background.
-    private static Map<String, Cursor> mChildrenCursors
+    private Map<String, Cursor> mChildrenCursors
         = new HashMap<String, Cursor>();
 
-    private static AsyncCalendarsUpdater mCalendarsUpdater;
+    private AsyncCalendarsUpdater mCalendarsUpdater;
     // This is to keep our update tokens separate from other tokens. Since we cancel old updates
     // when a new update comes in, we'd like to leave a token space that won't be canceled.
     private static final int MIN_UPDATE_TOKEN = 1000;
@@ -87,13 +87,13 @@ public class SelectSyncedCalendarsMultiAccountAdapter extends CursorTreeAdapter 
     private static final int REFRESH_DELAY = 5000;
     // How long to keep refreshing for
     private static final int REFRESH_DURATION = 60000;
-    private static boolean mRefresh = true;
+    private boolean mRefresh = true;
 
-    private static String mSyncedText;
-    private static String mNotSyncedText;
+    private String mSyncedText;
+    private String mNotSyncedText;
 
     // This is to keep track of whether or not multiple calendars have the same display name
-    private static HashMap<String, Boolean> mIsDuplicateName = new HashMap<String, Boolean>();
+    private HashMap<String, Boolean> mIsDuplicateName = new HashMap<String, Boolean>();
 
     private static final String[] PROJECTION = new String[] {
       Calendars._ID,
