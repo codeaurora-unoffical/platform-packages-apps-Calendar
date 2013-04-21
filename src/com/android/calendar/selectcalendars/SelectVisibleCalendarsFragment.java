@@ -27,9 +27,12 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.CalendarContract.Calendars;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,6 +70,39 @@ public class SelectVisibleCalendarsFragment extends Fragment
     private AsyncQueryService mService;
     private Cursor mCursor;
 
+    // Refresh list identifier
+    private final int REFRESH_CALENDARS_LIST = 1001;
+    // Refresh list delay 300ms to make sure the Database has
+    // updated completely.
+    private final long REFRESH_CALENDARS_DELAY = 200l;
+
+    // The handler used to refresh the Calendar group list.
+    private Handler mCalendarsRefreshHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            if (msg.what == REFRESH_CALENDARS_LIST) {
+                eventsChanged();
+            }
+        };
+    };
+
+    // ContentObserver which listened the changes of Calendars DB, if
+    // the DB changed, refresh the select visible calendars list.
+    private ContentObserver mCalendarsObserver = new ContentObserver(null) {
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            refreshCalendarsListDelayed(REFRESH_CALENDARS_DELAY);
+        }
+    };
+
+    private void refreshCalendarsListDelayed(long delayMillis) {
+        if (mCalendarsRefreshHandler != null) {
+            mCalendarsRefreshHandler.removeMessages(REFRESH_CALENDARS_LIST);
+            // Add a delay to avoid to refresh the calendars list every time.
+            mCalendarsRefreshHandler.sendEmptyMessageDelayed(REFRESH_CALENDARS_LIST, delayMillis);
+        }
+    }
+
     public SelectVisibleCalendarsFragment() {
     }
 
@@ -85,11 +121,20 @@ public class SelectVisibleCalendarsFragment extends Fragment
                 mCursor = cursor;
             }
         };
+        // Register a ContentObserver here for listen the changes of Calendars DB.
+        if (mContext != null && mContext.getContentResolver() != null) {
+            mContext.getContentResolver().registerContentObserver(Calendars.CONTENT_URI,
+                    true, mCalendarsObserver);
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        // Unregister the ContentObserver when this Fragment detached from Activity.
+        if (mContext != null && mContext.getContentResolver() != null) {
+            mContext.getContentResolver().unregisterContentObserver(mCalendarsObserver);
+        }
         if (mCursor != null) {
             mAdapter.changeCursor(null);
             mCursor.close();
@@ -140,9 +185,15 @@ public class SelectVisibleCalendarsFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        mQueryToken = mService.getNextToken();
-        mService.startQuery(mQueryToken, null, Calendars.CONTENT_URI, PROJECTION, SELECTION,
-                SELECTION_ARGS, Calendars.ACCOUNT_NAME);
+        // Set the Calendars list to empty every time
+        // to avoid the list flash when database changed.
+        if (mAdapter != null && mCursor != null) {
+            mAdapter.changeCursor(null);
+            mCursor.close();
+            mCursor = null;
+        }
+        // Read database and refresh Calendars list delayed.
+        refreshCalendarsListDelayed(REFRESH_CALENDARS_DELAY);
     }
 
     /*
