@@ -645,5 +645,6 @@
 
     <!-- Tell user not to check a checkbox [CHAR LIMIT=30] -->
     <string name="do_not_check">Do NOT check -></string>
+    <string name="space_full_toast">Space is full,Operation is failed!</string>
     <string name="content_to_limit">The content is full.</string>
 </resources>
