@@ -15,7 +15,7 @@
  */
 
 package com.android.calendar.event;
-
+import com.android.calendar.R;
 import android.content.ContentProviderOperation;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -46,17 +46,22 @@ import com.android.calendarcommon2.EventRecurrence;
 import com.android.calendarcommon2.RecurrenceProcessor;
 import com.android.calendarcommon2.RecurrenceSet;
 import com.android.common.Rfc822Validator;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import android.os.StatFs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.TimeZone;
+import android.widget.Toast;
 
 public class EditEventHelper {
     private static final String TAG = "EditEventHelper";
-
+    private static final int PROTECTION_FREE_BYTES = 50 *1024;//50KB
+    private static final long DATA_LEAST_SPACE = 1220608;
     private static final boolean DEBUG = false;
 
     public static final String[] EVENT_PROJECTION = new String[] {
@@ -188,6 +193,7 @@ public class EditEventHelper {
 
     static final String CALENDARS_WHERE_WRITEABLE_VISIBLE = Calendars.CALENDAR_ACCESS_LEVEL + ">="
             + Calendars.CAL_ACCESS_CONTRIBUTOR + " AND " + Calendars.VISIBLE + "=1";
+    private Context mContext;
 
     static final String CALENDARS_WHERE = Calendars._ID + "=?";
 
@@ -221,6 +227,7 @@ public class EditEventHelper {
 
     public EditEventHelper(Context context, CalendarEventModel model) {
         mService = ((AbstractCalendarActivity)context).getAsyncQueryService();
+        mContext = context;
     }
 
     /**
@@ -235,7 +242,12 @@ public class EditEventHelper {
     public boolean saveEvent(CalendarEventModel model, CalendarEventModel originalModel,
             int modifyWhich) {
         boolean forceSaveReminders = false;
-
+    long freeSpace = releaseSpace();
+    Log.d("freespace","freeSpace is "+freeSpace);
+	 if (freeSpace < DATA_LEAST_SPACE) {
+		Toast.makeText(mContext, mContext.getResources().getString(R.string.space_full_toast), Toast.LENGTH_SHORT).show();
+		return false;
+	}
         if (DEBUG) {
             Log.d(TAG, "Saving event model: " + model);
         }
@@ -1260,5 +1272,39 @@ public class EditEventHelper {
 
     public interface EditDoneRunnable extends Runnable {
         public void setDoneCode(int code);
+    }
+     public static long releaseSpace() {
+        StatFs userdata = new StatFs("/data");
+        long freeSpace = (long) userdata.getAvailableBlocks() * userdata.getBlockSize();
+        if (freeSpace > PROTECTION_FREE_BYTES) return freeSpace;
+
+        File cushion = new File("/data/var/cushion");
+        if (cushion.exists()) {
+            try {
+                long length = cushion.length();
+                RandomAccessFile file =  new RandomAccessFile(cushion, "rw");
+
+                if (length >= PROTECTION_FREE_BYTES) {  
+                    file.setLength(length - PROTECTION_FREE_BYTES);
+                    Log.w(TAG, "Data is full, now release space ( " + (length - PROTECTION_FREE_BYTES) + " )");
+                } else if (length > 0) {
+                    file.setLength(length);
+                    Log.w(TAG, "Data is full, now release space ( " + length + " )");
+                } else {
+                    Log.w(TAG, "Data is full, but /data/var/cushion length is " + length + ".");
+                }
+
+                file.close();
+                file = null;
+            } catch (IOException ex) {
+                Log.e(TAG, "Failed to get release Space for /data. ", ex);
+            }
+        } else {
+            Log.w(TAG, "Data is full, but /data/var/cushion is not exists!");
+        }
+
+        cushion = null;
+        userdata.restat("/data");
+        return (long) userdata.getAvailableBlocks() * userdata.getBlockSize();
     }
 }
