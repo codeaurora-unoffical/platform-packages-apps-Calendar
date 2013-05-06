@@ -275,6 +275,25 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
         }
     }
 
+    /**
+     * Check whether NoCalendarsDialog is showing.
+     *
+     * @return true if NoCalendarDialog is showing.
+     */
+    private boolean isNoCalendarDialogShowing() {
+        return (null != mNoCalendarsDialog) && mNoCalendarsDialog.isShowing();
+    }
+
+    /**
+     * Check whether TimezoneDialog is showing.
+     *
+     * @return true if TimezoneDialog is showing.
+     */
+    private boolean isTimezoneDialogShowing() {
+        return isNoCalendarDialogShowing() || (null != mTimezoneDialog &&
+                mTimezoneDialog.isShowing());
+    }
+
     private class TimeClickListener implements View.OnClickListener {
         private Time mTime;
 
@@ -284,6 +303,10 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
 
         @Override
         public void onClick(View v) {
+            if (isNoCalendarDialogShowing()) {
+                return;
+            }
+
             TimePickerDialog tp = new TimePickerDialog(mActivity, new TimeListener(v), mTime.hour,
                     mTime.minute, DateFormat.is24HourFormat(mActivity));
             tp.setCanceledOnTouchOutside(true);
@@ -388,6 +411,12 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
         mTimezoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // If mTimezoneDialog is showing no need show again when user
+                // double click the mTimezoneButton.
+                if (isTimezoneDialogShowing()) {
+                    return;
+                }
+
                 showTimezoneDialog();
             }
         });
@@ -594,6 +623,10 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
         }
 
         public void onClick(View v) {
+            if (isNoCalendarDialogShowing()) {
+                return;
+            }
+
             DatePickerDialog dpd = new DatePickerDialog(
                     mActivity, new DateListener(v), mTime.year, mTime.month, mTime.monthDay);
             CalendarView cv = dpd.getDatePicker().getCalendarView();
