@@ -37,9 +37,13 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.AsyncQueryHandler;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
@@ -50,6 +54,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
@@ -78,6 +83,8 @@ import com.android.calendar.agenda.AgendaFragment;
 import com.android.calendar.extensions.AllInOneMenuExtensions;
 import com.android.calendar.month.MonthByWeekFragment;
 import com.android.calendar.selectcalendars.SelectVisibleCalendarsFragment;
+import com.android.lunar.ILunarService;
+import com.android.lunar.LunarUtils;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -169,6 +176,23 @@ public class AllInOneActivity extends Activity implements EventHandler,
     private LinearLayout.LayoutParams mVerticalControlsParams;
 
     private AllInOneMenuExtensions mExtensions = new AllInOneMenuExtensions();
+
+    // add for feature: lunar
+    private ILunarService mLunarService = null;
+    private ServiceConnection mLunarConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mLunarService = null;
+            LunarUtils.setService(null);
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mLunarService = ILunarService.Stub.asInterface(service);
+            LunarUtils.setService(mLunarService);
+        }
+    };
 
     private final AnimatorListener mSlideAnimationDoneListener = new AnimatorListener() {
 
@@ -309,6 +333,12 @@ public class AllInOneActivity extends Activity implements EventHandler,
             setTheme(R.style.CalendarTheme_WithActionBarWallpaper);
         }
         super.onCreate(icicle);
+
+        // bind the lunar service
+        if (LunarUtils.showLunar() && mLunarService == null) {
+            bindService(new Intent(ILunarService.class.getName()),
+                    mLunarConnection, Context.BIND_AUTO_CREATE);
+        }
 
         if (icicle != null && icicle.containsKey(BUNDLE_KEY_CHECK_ACCOUNTS)) {
             mCheckForAccounts = icicle.getBoolean(BUNDLE_KEY_CHECK_ACCOUNTS);
@@ -634,6 +664,11 @@ public class AllInOneActivity extends Activity implements EventHandler,
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // unbind the lunar service
+        if (mLunarService != null && mLunarConnection != null) {
+            unbindService(mLunarConnection);
+        }
 
         SharedPreferences prefs = GeneralPreferences.getSharedPreferences(this);
         prefs.unregisterOnSharedPreferenceChangeListener(this);
