@@ -218,4 +218,7 @@
   </plurals>
     <string name="acessibility_selected_marker_description" msgid="3010149843148810768">"選取的活動"</string>
     <string name="do_not_check" msgid="7815441673853466129">"請勿勾選 -&gt;"</string>
+
+    <string name="account_removed">"帳戶已被刪除"</string>
+
 </resources>
