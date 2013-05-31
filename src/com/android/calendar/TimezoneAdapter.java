@@ -383,6 +383,8 @@ public class TimezoneAdapter extends ArrayAdapter<TimezoneRow> {
      * @return double array of tz ids and tz names
      */
     public CharSequence[][] getAllTimezones() {
+        // Reload res when getAllTimezones is called
+        loadFromResources(mContext.getResources());
         CharSequence[][] timeZones = new CharSequence[2][sTimezones.size()];
         List<String> ids = new ArrayList<String>(sTimezones.keySet());
         List<TimezoneRow> timezones = new ArrayList<TimezoneRow>(sTimezones.values());
@@ -395,20 +397,20 @@ public class TimezoneAdapter extends ArrayAdapter<TimezoneRow> {
     }
 
     private void loadFromResources(Resources resources) {
-        if (sTimezones == null) {
-            String[] ids = resources.getStringArray(R.array.timezone_values);
-            String[] labels = resources.getStringArray(R.array.timezone_labels);
+        // Don't save res string for timezone in memory whether sTimezones is null or not
+        // Load string when they are to be used every time
+        String[] ids = resources.getStringArray(R.array.timezone_values);
+        String[] labels = resources.getStringArray(R.array.timezone_labels);
 
-            int length = ids.length;
-            sTimezones = new LinkedHashMap<String, TimezoneRow>(length);
+        int length = ids.length;
+        sTimezones = new LinkedHashMap<String, TimezoneRow>(length);
 
-            if (ids.length != labels.length) {
-                Log.wtf(TAG, "ids length (" + ids.length + ") and labels length(" + labels.length +
-                        ") should be equal but aren't.");
-            }
-            for (int i = 0; i < length; i++) {
-                sTimezones.put(ids[i], new TimezoneRow(ids[i], labels[i]));
-            }
+        if (ids.length != labels.length) {
+            Log.wtf(TAG, "ids length (" + ids.length + ") and labels length(" + labels.length +
+                    ") should be equal but aren't.");
+        }
+        for (int i = 0; i < length; i++) {
+            sTimezones.put(ids[i], new TimezoneRow(ids[i], labels[i]));
         }
     }
 }
