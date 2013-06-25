@@ -743,6 +743,7 @@ public class AlertService extends Service {
             String tickerText, boolean defaultVibrate, String reminderRingtone) {
         Notification notification = nw.mNotification;
         notification.defaults |= Notification.DEFAULT_LIGHTS;
+        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
 
         // Quietly update notification bar. Nothing new. Maybe something just got deleted.
         if (!quietUpdate) {
