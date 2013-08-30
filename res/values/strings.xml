@@ -397,6 +397,8 @@
     <!-- The button label for making the reminder alarms go away temporarily
          and re-fire in 5 minutes. [CHAR LIMIT=12]-->
     <string name="snooze_label">"Snooze"</string>
+    <!-- The button label for  the reminder dissmiss the activity-->
+    <string name="dismiss_label">"Dismiss"</string>
 
     <!-- Repetition dialog options: -->
     <skip/>
@@ -680,6 +682,8 @@
 
     <!-- Tell user not to check a checkbox [CHAR LIMIT=30] -->
     <string name="do_not_check">Do NOT check -></string>
+
+    <string name="account_removed">Account has been removed</string>
 
     <!-- Dialog title for recurrence picker for configuring a repeating event[CHAR LIMIT=20] -->
     <string name="recurrence_dialog_title">Repeat</string>
