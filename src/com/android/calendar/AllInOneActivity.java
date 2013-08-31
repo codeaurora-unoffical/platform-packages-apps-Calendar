@@ -85,6 +85,7 @@ import com.android.lunar.ILunarService;
 import com.android.lunar.LunarUtils;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -99,6 +100,8 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
     private static final String BUNDLE_KEY_EVENT_ID = "key_event_id";
     private static final String BUNDLE_KEY_RESTORE_VIEW = "key_restore_view";
     private static final String BUNDLE_KEY_CHECK_ACCOUNTS = "key_check_for_accounts";
+    private static final String BUNDLE_KEY_CHECK_BACK_TO_PREVIEW = "key_check_for_back_to_preview";
+    private static final String BUNDLE_KEY_RESTORE_PREVIEW = "key_restore_preview";
     private static final int HANDLER_KEY = 0;
 
     // Indices of buttons for the drop down menu (tabs replacement)
@@ -631,6 +634,23 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
             }
         }
         outState.putBoolean(BUNDLE_KEY_CHECK_ACCOUNTS, mCheckForAccounts);
+        outState.putBoolean(BUNDLE_KEY_CHECK_BACK_TO_PREVIEW, mBackToPreviousView);
+        outState.putInt(BUNDLE_KEY_RESTORE_PREVIEW, mPreviousView);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(BUNDLE_KEY_RESTORE_PREVIEW)) {
+            mPreviousView = savedInstanceState.getInt(BUNDLE_KEY_RESTORE_PREVIEW);
+        }
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(BUNDLE_KEY_CHECK_BACK_TO_PREVIEW)) {
+            mBackToPreviousView = savedInstanceState
+                    .getBoolean(BUNDLE_KEY_CHECK_BACK_TO_PREVIEW);
+        }
     }
 
     @Override
@@ -806,6 +826,15 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
                 t.minute = 0;
             } else if (t.minute > 0 && t.minute < 30) {
                 t.minute = 30;
+            }
+            // Get the current time to display in month mode.
+            if (mCurrentView == ViewType.MONTH) {
+                Calendar calendar = Calendar.getInstance();
+                t.year = calendar.get(Calendar.YEAR);
+                t.month = calendar.get(Calendar.MONTH);
+                t.monthDay = calendar.get(Calendar.DATE);
+                t.weekDay = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+                t.yearDay = calendar.get(Calendar.DAY_OF_YEAR) - 1;
             }
             mController.sendEventRelatedEvent(
                     this, EventType.CREATE_EVENT, -1, t.toMillis(true), 0, 0, 0, -1);

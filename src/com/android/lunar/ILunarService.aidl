@@ -33,7 +33,7 @@ interface ILunarService {
     String getTraditionalFestivalSimple();
     String getTraditionalFestival(int lunarYear, int lunarMonth, int lunarDay);
     String getFestivalSimple();
-    String getFestival(int lunarMonth, int lunarDay);
+    String getFestival(int year, int month, int day);
     String getLunarSolarTerms(int year);
     String getAnimalsYearSimple();
     String getAnimalsYear(int lunarYear);
