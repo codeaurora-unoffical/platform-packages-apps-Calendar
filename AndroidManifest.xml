@@ -139,6 +139,7 @@
             android:theme="@android:style/Theme.Holo.Light"/>
 
         <activity android:name="CalendarSettingsActivity" android:label="@string/preferences_title"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@android:style/Theme.Holo.Light"/>
 
         <!-- Declarations for search -->
