@@ -742,4 +742,7 @@
 
     <!-- Do Not Translate.  Sender identity for global notification synchronization. -->
     <string name="notification_sender_id"></string>
+
+     <!-- Popup toast when no map app -->
+    <string name="toast_no_map_app">No map application</string>
 </resources>
