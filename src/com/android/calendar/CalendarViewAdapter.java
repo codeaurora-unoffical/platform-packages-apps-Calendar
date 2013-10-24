@@ -455,9 +455,6 @@ public class CalendarViewAdapter extends BaseAdapter {
         Time t1 = new Time(mTimeZone);
         t.set(weekEndTime);
         int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR;
-        if (t.month != t1.month) {
-            flags |= DateUtils.FORMAT_ABBREV_MONTH;
-        }
 
         mStringBuilder.setLength(0);
         String date = DateUtils.formatDateRange(mContext, mFormatter, weekStartTime,
