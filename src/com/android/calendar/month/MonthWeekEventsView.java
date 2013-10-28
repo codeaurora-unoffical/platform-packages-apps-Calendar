@@ -47,6 +47,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -285,6 +286,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
         if (!mShowDetailsInMonth) {
             int numDays = mEvents.size();
             int effectiveWidth = mWidth - mPadding * 2;
+            boolean isShallMirror = shallMirror();
             if (mShowWeekNum) {
                 effectiveWidth -= SPACING_WEEK_NUMBER;
             }
@@ -292,7 +294,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
             mDNAAllDayPaint.setStrokeWidth(DNA_ALL_DAY_WIDTH);
             mDayXs = new int[numDays];
             for (int day = 0; day < numDays; day++) {
-                mDayXs[day] = computeDayLeftPosition(day) + DNA_WIDTH / 2 + DNA_SIDE_PADDING;
+                mDayXs[day] = computeDayLeftPosition(isShallMirror ? numDays - 1 - day : day)
+                        + DNA_WIDTH / 2 + DNA_SIDE_PADDING;
 
             }
 
@@ -530,6 +533,9 @@ public class MonthWeekEventsView extends SimpleWeekView {
         if (julianToday >= mFirstJulianDay && julianToday < mFirstJulianDay + mNumDays) {
             mHasToday = true;
             mTodayIndex = julianToday - mFirstJulianDay;
+            if (shallMirror()) {
+                mTodayIndex = mNumDays - 1 - mTodayIndex;
+            }
         } else {
             mHasToday = false;
             mTodayIndex = -1;
@@ -585,6 +591,9 @@ public class MonthWeekEventsView extends SimpleWeekView {
             effectiveWidth -= xOffset;
         }
         x = day * effectiveWidth / mNumDays + xOffset;
+        if (shallMirror()) {
+            x -= xOffset;
+        }
         return x;
     }
 
@@ -592,9 +601,13 @@ public class MonthWeekEventsView extends SimpleWeekView {
     protected void drawDaySeparators(Canvas canvas) {
         float lines[] = new float[8 * 4];
         int count = 6 * 4;
+        boolean isShallMirror = shallMirror();
+        if (isShallMirror) {
+            count += 4;
+        }
         int wkNumOffset = 0;
         int i = 0;
-        if (mShowWeekNum) {
+        if (mShowWeekNum && !isShallMirror) {
             // This adds the first line separating the week number
             int xOffset = SPACING_WEEK_NUMBER + mPadding;
             count += 4;
@@ -628,6 +641,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
     protected void drawBackground(Canvas canvas) {
         int i = 0;
         int offset = 0;
+        boolean isShallMirror = shallMirror();
         r.top = DAY_SEPARATOR_INNER_WIDTH;
         r.bottom = mHeight;
         if (mShowWeekNum) {
@@ -639,6 +653,10 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 ;
             r.right = computeDayLeftPosition(i - offset);
             r.left = 0;
+            if (isShallMirror) {
+                r.left = computeDayLeftPosition(mNumDays - i + offset);
+                r.right = mWidth;
+            }
             p.setColor(mMonthBGOtherColor);
             canvas.drawRect(r, p);
             // compute left edge for i, set up r, draw
@@ -649,6 +667,10 @@ public class MonthWeekEventsView extends SimpleWeekView {
             // compute left edge for i, set up r, draw
             r.right = mWidth;
             r.left = computeDayLeftPosition(i - offset);
+            if (isShallMirror) {
+                r.right = computeDayLeftPosition(mNumDays - i + offset);
+                r.left = computeDayLeftPosition(0);
+            }
             p.setColor(mMonthBGOtherColor);
             canvas.drawRect(r, p);
         }
@@ -684,8 +706,12 @@ public class MonthWeekEventsView extends SimpleWeekView {
         int todayIndex = mTodayIndex;
         int x = 0;
         int numCount = mNumDays;
+        boolean isShallMirror = shallMirror();
         if (mShowWeekNum) {
             x = SIDE_PADDING_WEEK_NUMBER + mPadding;
+            if (isShallMirror) {
+                x = computeDayLeftPosition(mNumDays) + SIDE_PADDING_WEEK_NUMBER;
+            }
             y = mWeekNumAscentHeight + TOP_PADDING_WEEK_NUMBER;
             canvas.drawText(mDayNumbers[0], x, y, mWeekNumPaint);
             numCount++;
@@ -707,7 +733,10 @@ public class MonthWeekEventsView extends SimpleWeekView {
         time.setJulianDay(julianMonday);
 
         for (; i < numCount; i++) {
-            if (mHasToday && todayIndex == i) {
+            int index = i;
+            if (isShallMirror)
+                index = numCount - i + offset;
+            if (mHasToday && todayIndex == index) {
                 mMonthNumPaint.setColor(mMonthNumTodayColor);
                 mMonthNumPaint.setFakeBoldText(isBold = true);
                 if (i + 1 < numCount) {
@@ -719,7 +748,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 isFocusMonth = mFocusDay[i];
                 mMonthNumPaint.setColor(isFocusMonth ? mMonthNumColor : mMonthNumOtherColor);
             }
-            x = computeDayLeftPosition(i - offset) - (SIDE_PADDING_MONTH_NUMBER);
+            x = computeDayLeftPosition(index - offset) - (SIDE_PADDING_MONTH_NUMBER);
             canvas.drawText(mDayNumbers[i], x, y, mMonthNumPaint);
             if (isBold) {
                 mMonthNumPaint.setFakeBoldText(isBold = false);
@@ -1077,11 +1106,21 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     public int getDayIndexFromLocation(float x) {
         int dayStart = mShowWeekNum ? SPACING_WEEK_NUMBER + mPadding : mPadding;
-        if (x < dayStart || x > mWidth - mPadding) {
+        int dayEnd = mPadding;
+        boolean isShallMirror = shallMirror();
+        if (isShallMirror) {
+            dayEnd = dayStart;
+            dayStart = mPadding;
+        }
+        if (x < dayStart || x > mWidth - dayEnd) {
             return -1;
         }
         // Selection is (x - start) / (pixels/day) == (x -s) * day / pixels
-        return ((int) ((x - dayStart) * mNumDays / (mWidth - dayStart - mPadding)));
+        int dayPosition = (int) ((x - dayStart) * mNumDays / (mWidth - dayStart - dayEnd));
+        if (isShallMirror) {
+            dayPosition = mNumDays - 1 - dayPosition;
+        }
+        return dayPosition;
     }
 
     @Override
@@ -1158,10 +1197,18 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     public void setClickedDay(float xLocation) {
         mClickedDayIndex = getDayIndexFromLocation(xLocation);
+        if (shallMirror()) {
+            mClickedDayIndex = mNumDays - 1 - mClickedDayIndex;
+        }
         invalidate();
     }
     public void clearClickedDay() {
         mClickedDayIndex = -1;
         invalidate();
+    }
+
+    public boolean shallMirror() {
+        return View.LAYOUT_DIRECTION_RTL ==
+                TextUtils.getLayoutDirectionFromLocale(Locale.getDefault());
     }
 }
