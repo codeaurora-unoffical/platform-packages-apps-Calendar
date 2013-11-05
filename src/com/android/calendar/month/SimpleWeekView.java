@@ -28,6 +28,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.view.MotionEvent;
@@ -37,6 +38,7 @@ import android.view.accessibility.AccessibilityManager;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+
 
 /**
  * <p>
@@ -367,11 +369,19 @@ public class SimpleWeekView extends View {
      */
     public Time getDayFromLocation(float x) {
         int dayStart = mShowWeekNum ? (mWidth - mPadding * 2) / mNumCells + mPadding : mPadding;
-        if (x < dayStart || x > mWidth - mPadding) {
+        int dayEnd = mPadding;
+        if (isLayoutRtl()) {
+            dayEnd = dayStart;
+            dayStart = 0;
+        }
+        if (x < dayStart || x > mWidth - dayEnd) {
             return null;
         }
         // Selection is (x - start) / (pixels/day) == (x -s) * day / pixels
-        int dayPosition = (int) ((x - dayStart) * mNumDays / (mWidth - dayStart - mPadding));
+        int dayPosition = (int) ((x - dayStart) * mNumDays / (mWidth - dayStart - dayEnd));
+        if (isLayoutRtl()) {
+            dayPosition = mNumDays - 1 - dayPosition;
+        }
         int day = mFirstJulianDay + dayPosition;
 
         Time time = new Time(mTimeZone);
