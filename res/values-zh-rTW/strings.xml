@@ -61,6 +61,7 @@
     <string name="goto_today" msgid="9162136434410891230">"今日"</string>
     <string name="menu_preferences" msgid="9120238479503233925">"設定"</string>
     <string name="menu_select_visible_calendars" msgid="735670432781741817">"要顯示的日曆"</string>
+    <string name="go_to">"轉到"</string>
     <string name="search" msgid="550656004486017426">"搜尋"</string>
     <string name="hide_controls" msgid="830320505938520882">"隱藏控制介面"</string>
     <string name="show_controls" msgid="715520586028062621">"顯示控制介面"</string>
