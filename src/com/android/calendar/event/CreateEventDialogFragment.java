@@ -307,13 +307,22 @@ public class CreateEventDialogFragment extends DialogFragment implements TextWat
         int calendarNameIndex = cursor.getColumnIndexOrThrow(Calendars.CALENDAR_DISPLAY_NAME);
         int accountNameIndex = cursor.getColumnIndexOrThrow(Calendars.ACCOUNT_NAME);
         int calendarOwnerIndex = cursor.getColumnIndexOrThrow(Calendars.OWNER_ACCOUNT);
+        int accountTypeIndex = cursor.getColumnIndexOrThrow(Calendars.ACCOUNT_TYPE);
+
+        boolean isLocalAccount = false;
+        String localName = "";
+        if (CalendarContract.ACCOUNT_TYPE_LOCAL.equals(
+                cursor.getString(accountTypeIndex))) {
+            isLocalAccount = true;
+            localName = getString(R.string.calendar_local_account_name);
+        }
 
         mCalendarId = cursor.getLong(calendarIdIndex);
         mCalendarOwner = cursor.getString(calendarOwnerIndex);
         mColor.setBackgroundColor(Utils.getDisplayColorFromColor(cursor
                 .getInt(colorIndex)));
-        String accountName = cursor.getString(accountNameIndex);
-        String calendarName = cursor.getString(calendarNameIndex);
+        String accountName = isLocalAccount ? localName : cursor.getString(accountNameIndex);
+        String calendarName = isLocalAccount ? localName : cursor.getString(calendarNameIndex);
         mCalendarName.setText(calendarName);
         if (calendarName.equals(accountName)) {
             mAccountName.setVisibility(View.GONE);
