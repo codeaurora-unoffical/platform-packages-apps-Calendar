@@ -518,8 +518,10 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
     }
 
     public static class CalendarsAdapter extends ResourceCursorAdapter {
+        private Context context;
         public CalendarsAdapter(Context context, int resourceId, Cursor c) {
             super(context, resourceId, c);
+            this.context = context;
             setDropDownViewResource(R.layout.calendars_dropdown_item);
         }
 
@@ -529,19 +531,27 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
             int colorColumn = cursor.getColumnIndexOrThrow(Calendars.CALENDAR_COLOR);
             int nameColumn = cursor.getColumnIndexOrThrow(Calendars.CALENDAR_DISPLAY_NAME);
             int ownerColumn = cursor.getColumnIndexOrThrow(Calendars.OWNER_ACCOUNT);
+            int accountTypeColumn = cursor.getColumnIndexOrThrow(Calendars.ACCOUNT_TYPE);
             if (colorBar != null) {
                 colorBar.setBackgroundColor(Utils.getDisplayColorFromColor(cursor
                         .getInt(colorColumn)));
             }
-
+            boolean isLocalAccount = false;
+            String localName = "";
+            if (CalendarContract.ACCOUNT_TYPE_LOCAL.equals(
+                    cursor.getString(accountTypeColumn))) {
+                isLocalAccount = true;
+                localName = context.getString(R.string.calendar_local_account_name);
+            }
             TextView name = (TextView) view.findViewById(R.id.calendar_name);
             if (name != null) {
-                String displayName = cursor.getString(nameColumn);
+                String displayName = isLocalAccount ? localName : cursor.getString(nameColumn);
                 name.setText(displayName);
 
                 TextView accountName = (TextView) view.findViewById(R.id.account_name);
                 if (accountName != null) {
-                    accountName.setText(cursor.getString(ownerColumn));
+                    accountName.setText(isLocalAccount ? localName
+                            : cursor.getString(ownerColumn));
                     accountName.setVisibility(TextView.VISIBLE);
                 }
             }
