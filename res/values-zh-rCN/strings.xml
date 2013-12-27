@@ -281,4 +281,6 @@
     <string name="acessibility_recurrence_choose_end_date_description" msgid="5899029840837836711">"更改结束日期"</string>
 
     <string name="toast_no_map_app">没有地图应用</string>
+    <!-- 提示输入文本达到最大长度-->
+    <string name="description_reach_limit">说明已达到最大长度</string>
 </resources>
