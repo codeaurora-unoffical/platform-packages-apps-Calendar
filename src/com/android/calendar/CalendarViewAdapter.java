@@ -479,7 +479,7 @@ public class CalendarViewAdapter extends BaseAdapter {
                         DateUtils.FORMAT_SHOW_DATE);
                 if (!mLunarInfoMap.containsKey(date)) {
                     String lunarInfo = service.getLunarStringForDayView(
-                            time.year, time.month, time.monthDay);
+                            time.year, time.month, time.monthDay, true);
                     mLunarInfoMap.put(date, lunarInfo);
                 }
 
@@ -490,7 +490,7 @@ public class CalendarViewAdapter extends BaseAdapter {
                         DateUtils.FORMAT_SHOW_DATE);
                 if (!mLunarInfoMap.containsKey(date)) {
                     String lunarInfo = service.getLunarStringForDayView(
-                            time.year, time.month, time.monthDay);
+                            time.year, time.month, time.monthDay, true);
                     mLunarInfoMap.put(date, lunarInfo);
                 }
 
@@ -501,7 +501,7 @@ public class CalendarViewAdapter extends BaseAdapter {
                         DateUtils.FORMAT_SHOW_DATE);
                 if (!mLunarInfoMap.containsKey(date)) {
                     String lunarInfo = service.getLunarStringForDayView(
-                            time.year, time.month, time.monthDay);
+                            time.year, time.month, time.monthDay, true);
                     mLunarInfoMap.put(date, lunarInfo);
                 }
             }
