@@ -24,6 +24,8 @@ import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -279,6 +281,17 @@ public class AlertReceiver extends BroadcastReceiver {
                 context, title, summaryText, startMillis, endMillis, eventId, notificationId,
                 doPopup, priority, false);
         return new NotificationWrapper(n, notificationId, eventId, startMillis, endMillis, doPopup);
+    }
+
+    public static boolean isIntentAvailable(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> resolveInfo =
+                packageManager.queryIntentActivities(intent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfo.size() > 0) {
+            return true;
+        }
+        return false;
     }
 
     private static Notification buildBasicNotification(Notification.Builder notificationBuilder,
@@ -804,12 +817,17 @@ public class AlertReceiver extends BroadcastReceiver {
             URLSpan urlSpan = urlSpans[span_i];
             String urlString = urlSpan.getURL();
             if (urlString.startsWith(GEO_PREFIX)) {
-                Intent broadcastIntent = new Intent(MAP_ACTION);
-                broadcastIntent.setClass(context, AlertReceiver.class);
-                broadcastIntent.putExtra(EXTRA_EVENT_ID, eventId);
-                return PendingIntent.getBroadcast(context,
-                        Long.valueOf(eventId).hashCode(), broadcastIntent,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
+                Intent geoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
+                geoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                // If no map applications installed, remove "Map" in alert notification
+                if(isIntentAvailable(context,geoIntent)) {
+                    Intent broadcastIntent = new Intent(MAP_ACTION);
+                    broadcastIntent.setClass(context, AlertReceiver.class);
+                    broadcastIntent.putExtra(EXTRA_EVENT_ID, eventId);
+                    return PendingIntent.getBroadcast(context,
+                            Long.valueOf(eventId).hashCode(), broadcastIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT);
+                }
             }
         }
 
