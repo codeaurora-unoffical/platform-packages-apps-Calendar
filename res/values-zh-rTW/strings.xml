@@ -282,4 +282,7 @@
     <string name="acessibility_recurrence_choose_end_date_description" msgid="5899029840837836711">"變更結束日期"</string>
 
     <string name="toast_no_map_app">沒有地圖應用</string>
+
+    <string name="event_clear">清除活動</string>
+    <string name="delete_all_event_title">清除所有可以修改的活動？</string>
 </resources>
