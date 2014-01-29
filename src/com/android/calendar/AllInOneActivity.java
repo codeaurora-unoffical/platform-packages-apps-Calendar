@@ -31,6 +31,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -40,6 +41,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -67,6 +69,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -165,6 +168,7 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
 
     private String mHideString;
     private String mShowString;
+    private boolean mUserDoneForDateChange = false;
 
     DayOfMonthDrawable mDayOfMonthIcon;
 
@@ -865,7 +869,59 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
             return true;
         } else if (itemId == R.id.action_search) {
             return false;
-        } else {
+        } else if (itemId == R.id.action_goto) {
+            // Get the current time to display in Dialog.
+            t = new Time(mTimeZone);
+            Calendar calendar = Calendar.getInstance();
+            t.year = calendar.get(Calendar.YEAR);
+            t.month = calendar.get(Calendar.MONTH);
+            t.monthDay = calendar.get(Calendar.DATE);
+            final DatePickerDialog.OnDateSetListener DatecallBack =
+                new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear,
+                    int dayOfMonth) {
+                    if(mUserDoneForDateChange == true) {
+                        Time t = null;
+                        t = new Time(mTimeZone);
+                        t.set(dayOfMonth, monthOfYear, year);
+                        t.set(t.toMillis(false));
+                        mController.sendEvent(this,
+                                              EventType.GO_TO,
+                                              null,
+                                              null,
+                                              t,
+                                              -1,
+                                              ViewType.CURRENT,
+                                              CalendarController.EXTRA_GOTO_TIME,
+                                              null,
+                                              null);
+                    }
+                }
+
+
+            };
+            DatePickerDialog dialog = new DatePickerDialog(this,
+                                                  DatecallBack,
+                                                  t.year,
+                                                  t.month,
+                                                  t.monthDay){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(which == DialogInterface.BUTTON_POSITIVE) {
+                        mUserDoneForDateChange = true;
+                    }
+                    super.onClick(dialog, which);
+                }
+                @Override
+                protected void onStop() {
+                    mUserDoneForDateChange = false;
+                    super.onStop();
+                }
+            };
+            dialog.show();
+            return true;
+        }  else {
             return mExtensions.handleItemSelected(item, this);
         }
         mController.sendEvent(this, EventType.GO_TO, t, null, t, -1, viewType, extras, null, null);
