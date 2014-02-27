@@ -393,8 +393,13 @@ public class CalendarViewAdapter extends BaseAdapter {
     // Week:  month day-day or month day - month day
     private String buildFullDate() {
         mStringBuilder.setLength(0);
-        String date = DateUtils.formatDateRange(mContext, mFormatter, mMilliTime, mMilliTime,
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR, mTimeZone).toString();
+        String date = DateUtils.formatDateRange(
+                mContext,
+                mFormatter,
+                mMilliTime,
+                mMilliTime,
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR
+                        | DateUtils.FORMAT_ABBREV_MONTH, mTimeZone).toString();
         return date;
     }
 
@@ -406,14 +411,20 @@ public class CalendarViewAdapter extends BaseAdapter {
                 mMilliTime,
                 mMilliTime,
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_MONTH_DAY
-                        | DateUtils.FORMAT_SHOW_YEAR, mTimeZone).toString();
+                        | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH, mTimeZone)
+                .toString();
         return date;
     }
 
     private String buildMonthDayDate() {
         mStringBuilder.setLength(0);
-        String date = DateUtils.formatDateRange(mContext, mFormatter, mMilliTime, mMilliTime,
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR, mTimeZone).toString();
+        String date = DateUtils.formatDateRange(
+                mContext,
+                mFormatter,
+                mMilliTime,
+                mMilliTime,
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR
+                        | DateUtils.FORMAT_ABBREV_MONTH, mTimeZone).toString();
         return date;
     }
 
@@ -425,9 +436,11 @@ public class CalendarViewAdapter extends BaseAdapter {
                 mMilliTime,
                 mMilliTime,
                 DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR
-                        | DateUtils.FORMAT_NO_MONTH_DAY, mTimeZone).toString();
+                        | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_ABBREV_MONTH, mTimeZone)
+                .toString();
         return date;
     }
+
     private String buildWeekDate() {
 
 
@@ -454,7 +467,8 @@ public class CalendarViewAdapter extends BaseAdapter {
         // If week start and end is in 2 different months, use short months names
         Time t1 = new Time(mTimeZone);
         t.set(weekEndTime);
-        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR;
+        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR
+                | DateUtils.FORMAT_ABBREV_MONTH;
 
         mStringBuilder.setLength(0);
         String date = DateUtils.formatDateRange(mContext, mFormatter, weekStartTime,
