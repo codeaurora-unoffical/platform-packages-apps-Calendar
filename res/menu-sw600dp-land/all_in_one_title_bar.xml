@@ -29,6 +29,11 @@
         android:showAsAction="ifRoom"
         android:icon="@drawable/ic_menu_add_event_holo_light" />
     <item
+        android:id="@+id/action_clear_event"
+        android:alphabeticShortcut="n"
+        android:title="@string/event_clear"
+        android:showAsAction="never" />
+    <item
         android:id="@+id/action_refresh"
         android:alphabeticShortcut="r"
         android:title="@string/calendar_refresh"
