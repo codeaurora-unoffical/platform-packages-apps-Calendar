@@ -748,4 +748,12 @@
 
      <!-- Popup toast when no map app -->
     <string name="toast_no_map_app">No map application</string>
+    <!-- String for Local account name in Calendars table -->
+    <string name="calendar_local_account_name">Phone</string>
+
+    <!-- Popup toast when text reached max length-->
+    <string name="description_reach_limit">Description has reached max length</string>
+
+    <string name="event_clear">"Clear event"</string>
+    <string name="delete_all_event_title">Clear all the access events?</string>
 </resources>

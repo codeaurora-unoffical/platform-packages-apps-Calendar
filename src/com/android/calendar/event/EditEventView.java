@@ -30,6 +30,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Attendees;
 import android.provider.CalendarContract.Calendars;
@@ -38,6 +40,7 @@ import android.provider.CalendarContract.Reminders;
 import android.provider.Settings;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -66,6 +69,7 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.android.calendar.CalendarEventModel;
 import com.android.calendar.CalendarEventModel.Attendee;
@@ -228,6 +232,28 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
 
     private static StringBuilder mSB = new StringBuilder(50);
     private static Formatter mF = new Formatter(mSB, Locale.getDefault());
+    private static final int MAX_LENGTH = 200;
+    private static final int SHOW_DESCRIPTION_TOAST = 1;
+
+    //handler for handle text reached max length.
+    private Handler textReachedMaxLengthHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            int descerptionLength = mDescriptionTextView.length();
+            switch (msg.what) {
+                case SHOW_DESCRIPTION_TOAST:
+                    if (descerptionLength == MAX_LENGTH) {
+                        Resources r = mActivity.getResources();
+                        Toast t = Toast.makeText(mActivity, r.getString(
+                                R.string.description_reach_limit), Toast.LENGTH_SHORT);
+                        t.show();
+                    }
+                    break;
+                default:
+                    break;
+           }
+        }
+    };
 
     /* This class is used to update the time buttons. */
     private class TimeListener implements OnTimeSetListener {
@@ -518,8 +544,10 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
     }
 
     public static class CalendarsAdapter extends ResourceCursorAdapter {
+        private Context context;
         public CalendarsAdapter(Context context, int resourceId, Cursor c) {
             super(context, resourceId, c);
+            this.context = context;
             setDropDownViewResource(R.layout.calendars_dropdown_item);
         }
 
@@ -529,19 +557,27 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
             int colorColumn = cursor.getColumnIndexOrThrow(Calendars.CALENDAR_COLOR);
             int nameColumn = cursor.getColumnIndexOrThrow(Calendars.CALENDAR_DISPLAY_NAME);
             int ownerColumn = cursor.getColumnIndexOrThrow(Calendars.OWNER_ACCOUNT);
+            int accountTypeColumn = cursor.getColumnIndexOrThrow(Calendars.ACCOUNT_TYPE);
             if (colorBar != null) {
                 colorBar.setBackgroundColor(Utils.getDisplayColorFromColor(cursor
                         .getInt(colorColumn)));
             }
-
+            boolean isLocalAccount = false;
+            String localName = "";
+            if (CalendarContract.ACCOUNT_TYPE_LOCAL.equals(
+                    cursor.getString(accountTypeColumn))) {
+                isLocalAccount = true;
+                localName = context.getString(R.string.calendar_local_account_name);
+            }
             TextView name = (TextView) view.findViewById(R.id.calendar_name);
             if (name != null) {
-                String displayName = cursor.getString(nameColumn);
+                String displayName = isLocalAccount ? localName : cursor.getString(nameColumn);
                 name.setText(displayName);
 
                 TextView accountName = (TextView) view.findViewById(R.id.account_name);
                 if (accountName != null) {
-                    accountName.setText(cursor.getString(ownerColumn));
+                    accountName.setText(isLocalAccount ? localName
+                            : cursor.getString(ownerColumn));
                     accountName.setVisibility(TextView.VISIBLE);
                 }
             }
@@ -790,6 +826,29 @@ public class EditEventView implements View.OnClickListener, DialogInterface.OnCa
         mTitleTextView = (TextView) view.findViewById(R.id.title);
         mLocationTextView = (AutoCompleteTextView) view.findViewById(R.id.location);
         mDescriptionTextView = (TextView) view.findViewById(R.id.description);
+
+        TextWatcher textWatcher = new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s,int start,int before,int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s,int start, int before, int count){
+                Message msg = textReachedMaxLengthHandler.obtainMessage();
+                msg.what = SHOW_DESCRIPTION_TOAST;
+                if (s.length() == MAX_LENGTH) {
+                    textReachedMaxLengthHandler.sendMessage(msg);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+            }
+        };
+        mDescriptionTextView.addTextChangedListener(textWatcher);
+        mDescriptionTextView.setFilters(new InputFilter[] {
+                new InputFilter.LengthFilter(MAX_LENGTH)});
+
         mTimezoneLabel = (TextView) view.findViewById(R.id.timezone_label);
         mStartDateButton = (Button) view.findViewById(R.id.start_date);
         mEndDateButton = (Button) view.findViewById(R.id.end_date);
