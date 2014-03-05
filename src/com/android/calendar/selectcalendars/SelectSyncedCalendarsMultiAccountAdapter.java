@@ -29,6 +29,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
 import android.util.Log;
@@ -333,6 +334,10 @@ public class SelectSyncedCalendarsMultiAccountAdapter extends CursorTreeAdapter 
         final String accountType = cursor.getString(ACCOUNT_TYPE_COLUMN);
         int color = Utils.getDisplayColorFromColor(cursor.getInt(COLOR_COLUMN));
 
+        if (CalendarContract.ACCOUNT_TYPE_LOCAL.equals(accountType)) {
+            name = owner = context.getString(R.string.calendar_local_account_name);
+        }
+
         final View colorSquare = view.findViewById(R.id.color);
         colorSquare.setEnabled(mCache.hasColors(accountName, accountType));
         colorSquare.setBackgroundColor(color);
@@ -401,7 +406,9 @@ public class SelectSyncedCalendarsMultiAccountAdapter extends CursorTreeAdapter 
         String account = cursor.getString(accountColumn);
         String accountType = cursor.getString(accountTypeColumn);
         CharSequence accountLabel = getLabelForType(accountType);
-        setText(view, R.id.account, account);
+        boolean isLocalAccount = accountType.equals(CalendarContract.ACCOUNT_TYPE_LOCAL);
+        setText(view, R.id.account, isLocalAccount
+                ? context.getString(R.string.calendar_local_account_name) : account);
         if (accountLabel != null) {
             setText(view, R.id.account_type, accountLabel.toString());
         }

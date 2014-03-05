@@ -1743,11 +1743,13 @@ public class EventInfoFragment extends DialogFragment implements OnCheckedChange
 
         mCalendarOwnerAccount = "";
         if (mCalendarsCursor != null && mEventCursor != null) {
-            mCalendarsCursor.moveToFirst();
-            String tempAccount = mCalendarsCursor.getString(CALENDARS_INDEX_OWNER_ACCOUNT);
-            mCalendarOwnerAccount = (tempAccount == null) ? "" : tempAccount;
-            mOwnerCanRespond = mCalendarsCursor.getInt(CALENDARS_INDEX_OWNER_CAN_RESPOND) != 0;
-            mSyncAccountName = mCalendarsCursor.getString(CALENDARS_INDEX_ACCOUNT_NAME);
+            if (mCalendarsCursor.moveToFirst()) {
+                String tempAccount = mCalendarsCursor.getString(CALENDARS_INDEX_OWNER_ACCOUNT);
+                mCalendarOwnerAccount = (tempAccount == null) ? "" : tempAccount;
+                mOwnerCanRespond = mCalendarsCursor
+                        .getInt(CALENDARS_INDEX_OWNER_CAN_RESPOND) != 0;
+                mSyncAccountName = mCalendarsCursor.getString(CALENDARS_INDEX_ACCOUNT_NAME);
+            }
 
             // start visible calendars query
             mHandler.startQuery(TOKEN_QUERY_VISIBLE_CALENDARS, null, Calendars.CONTENT_URI,

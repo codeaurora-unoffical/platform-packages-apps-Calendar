@@ -30,6 +30,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
+import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.text.TextUtils;
 import android.text.format.Time;
@@ -191,6 +192,38 @@ public class DeleteEventHelper {
             }
         }
     };
+
+    /**
+     * Deleting all the access event.
+     */
+    public void deleteAll() {
+        AlertDialog dialog = new AlertDialog.Builder(mContext)
+                .setMessage(R.string.delete_all_event_title)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setNegativeButton(android.R.string.cancel, null).create();
+
+        // This is a normal event. Pop up a confirmation dialog.
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                mContext.getText(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteStarted();
+                        String where = Calendars.CALENDAR_ACCESS_LEVEL + ">="
+                                + Calendars.CAL_ACCESS_CONTRIBUTOR;
+                        mService.startDelete(mService.getNextToken(), null, Events.CONTENT_URI,
+                                where, null, Utils.UNDO_DELAY);
+                        if (mCallback != null) {
+                            mCallback.run();
+                        }
+                        if (mExitWhenDone) {
+                            mParent.finish();
+                        }
+                    }
+                });
+        dialog.setOnDismissListener(mDismissListener);
+        dialog.show();
+        mAlertDialog = dialog;
+    }
 
     /**
      * Does the required processing for deleting an event, which includes

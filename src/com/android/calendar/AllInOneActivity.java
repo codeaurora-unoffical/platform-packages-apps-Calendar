@@ -843,6 +843,11 @@ public class AllInOneActivity extends AbstractCalendarActivity implements EventH
             mController.sendEventRelatedEvent(
                     this, EventType.CREATE_EVENT, -1, t.toMillis(true), 0, 0, 0, -1);
             return true;
+        } else if (itemId == R.id.action_clear_event) {
+            DeleteEventHelper deleteEventHelper =
+                    new DeleteEventHelper(this, null, false /* don't exit when done */);
+            deleteEventHelper.deleteAll();
+            return true;
         } else if (itemId == R.id.action_select_visible_calendars) {
             mController.sendEvent(this, EventType.LAUNCH_SELECT_VISIBLE_CALENDARS, null, null,
                     0, 0);
