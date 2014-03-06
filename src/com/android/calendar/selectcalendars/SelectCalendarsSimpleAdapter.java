@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -45,6 +46,8 @@ public class SelectCalendarsSimpleAdapter extends BaseAdapter implements ListAda
     OnCalendarColorsLoadedListener {
     private static final String TAG = "SelectCalendarsAdapter";
     private static final String COLOR_PICKER_DIALOG_TAG = "ColorPickerDialog";
+
+    private static Context mContext;
 
     private static int BOTTOM_ITEM_HEIGHT = 64;
     private static int NORMAL_ITEM_HEIGHT = 48;
@@ -95,6 +98,7 @@ public class SelectCalendarsSimpleAdapter extends BaseAdapter implements ListAda
 
     public SelectCalendarsSimpleAdapter(Context context, int layout, Cursor c, FragmentManager fm) {
         super();
+        mContext = context;
         mLayout = layout;
         mOrientation = context.getResources().getConfiguration().orientation;
         initData(c);
@@ -218,6 +222,14 @@ public class SelectCalendarsSimpleAdapter extends BaseAdapter implements ListAda
         if (position >= mRowCount) {
             return null;
         }
+
+        boolean isLocalAccount = false;
+        String localName = "";
+        if (mData[position].accountType.equals(CalendarContract.ACCOUNT_TYPE_LOCAL)) {
+            isLocalAccount = true;
+            localName = mContext.getString(R.string.calendar_local_account_name);
+        }
+
         String name = mData[position].displayName;
         boolean selected = mData[position].selected;
 
@@ -245,7 +257,7 @@ public class SelectCalendarsSimpleAdapter extends BaseAdapter implements ListAda
         }
 
         TextView calendarName = (TextView) view.findViewById(R.id.calendar);
-        calendarName.setText(name);
+        calendarName.setText(isLocalAccount ? localName : name);
 
         View colorView = view.findViewById(R.id.color);
         colorView.setBackgroundColor(color);

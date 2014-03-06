@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.shapes.RectShape;
+import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -47,6 +48,7 @@ public class SelectCalendarsSyncAdapter extends BaseAdapter
     private static final String TAG = "SelCalsAdapter";
     private static final String COLOR_PICKER_DIALOG_TAG = "ColorPickerDialog";
 
+    private static Context mContext;
     private static int COLOR_CHIP_SIZE = 30;
     private RectShape r = new RectShape();
 
@@ -86,6 +88,7 @@ public class SelectCalendarsSyncAdapter extends BaseAdapter
 
     public SelectCalendarsSyncAdapter(Context context, Cursor c, FragmentManager manager) {
         super();
+        mContext = context;
         initData(c);
         mCache = new CalendarColorCache(context, this);
         mFragmentManager = manager;
@@ -148,7 +151,9 @@ public class SelectCalendarsSyncAdapter extends BaseAdapter
         if (position >= mRowCount) {
             return null;
         }
-        String name = mData[position].displayName;
+        String name = (mData[position].accountType.equals(CalendarContract.ACCOUNT_TYPE_LOCAL))
+                ? mContext.getString(R.string.calendar_local_account_name)
+                : mData[position].displayName;
         boolean selected = mData[position].synced;
         int color = Utils.getDisplayColorFromColor(mData[position].color);
         View view;
