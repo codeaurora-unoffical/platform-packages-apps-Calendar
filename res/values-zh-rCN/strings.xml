@@ -279,7 +279,8 @@
     <!-- Delete Events related -->
     <string name="events_delete">删除活动</string>
     <string name="action_select_all">全选</string>
-    <string name="action_delete">删除</string>
+    <string name="action_select_none">取消全选</string>
+    <string name="action_delete">完成</string>
     <string name="all_events">所有活动</string>
     <string name="no_events">无活动</string>
     <string name="selected">选择</string>
@@ -287,4 +288,7 @@
     <string name="evt_del_dlg_msg_selected">删除选择的活动</string>
     <string name="evt_del_dlg_msg_all">删除所有活动</string>
     <string name="no_events_selected">没有选择活动</string>
+
+    <!-- The toast for event's description length limit. -->
+    <string name="alert_event_description_length_limit">活动说明须少于<xliff:g id="count">%d</xliff:g>个字符。</string>
 </resources>
