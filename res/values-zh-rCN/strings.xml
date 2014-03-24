@@ -61,6 +61,7 @@
     <string name="goto_today" msgid="9162136434410891230">"今天"</string>
     <string name="menu_preferences" msgid="9120238479503233925">"设置"</string>
     <string name="menu_select_visible_calendars" msgid="735670432781741817">"显示的日历"</string>
+    <string name="go_to">"转到"</string>
     <string name="search" msgid="550656004486017426">"搜索"</string>
     <string name="hide_controls" msgid="830320505938520882">"隐藏控件"</string>
     <string name="show_controls" msgid="715520586028062621">"显示控件"</string>
@@ -274,4 +275,20 @@
     <item quantity="other" msgid="8779598489398048259">"重复<xliff:g id="EVENT_COUNT">%d</xliff:g>次"</item>
   </plurals>
     <string name="acessibility_recurrence_choose_end_date_description" msgid="5899029840837836711">"更改结束日期"</string>
+
+    <!-- Delete Events related -->
+    <string name="events_delete">删除活动</string>
+    <string name="action_select_all">全选</string>
+    <string name="action_select_none">取消全选</string>
+    <string name="action_delete">完成</string>
+    <string name="all_events">所有活动</string>
+    <string name="no_events">无活动</string>
+    <string name="selected">选择</string>
+    <string name="evt_del_dlg_title">删除活动？</string>
+    <string name="evt_del_dlg_msg_selected">删除选择的活动</string>
+    <string name="evt_del_dlg_msg_all">删除所有活动</string>
+    <string name="no_events_selected">没有选择活动</string>
+
+    <!-- The toast for event's description length limit. -->
+    <string name="alert_event_description_length_limit">活动说明须少于<xliff:g id="count">%d</xliff:g>个字符。</string>
 </resources>
