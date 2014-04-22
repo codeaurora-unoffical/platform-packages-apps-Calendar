@@ -755,6 +755,6 @@
     <string name="evt_del_dlg_msg_all">All events will be deleted</string>
     <string name="no_events_selected">No events selected</string>
 
-    <!-- The toast for event's description length limit. -->
-    <string name="alert_event_description_length_limit">The length of event\'s description must less than <xliff:g id="count">%d</xliff:g> characters.</string>
+    <!-- The toast for event's length limit. -->
+    <string name="alert_event_length_limit">The length of \"<xliff:g id="item">%s</xliff:g>\" must less than <xliff:g id="count">%d</xliff:g> characters.</string>
 </resources>
