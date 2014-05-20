@@ -123,6 +123,7 @@ public class AlertAdapter extends ResourceCursorAdapter {
         if (DateFormat.is24HourFormat(context)) {
             flags |= DateUtils.FORMAT_24HOUR;
         }
+        flags |= DateUtils.FORMAT_ABBREV_MONTH;
 
         Time time = new Time(tz);
         time.set(startMillis);
