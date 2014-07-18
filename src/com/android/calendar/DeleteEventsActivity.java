@@ -245,6 +245,7 @@ public class DeleteEventsActivity extends ListActivity
         if (DEBUG) Log.d(TAG, "onListItemClick: position: " + position + " Id: " + id);
 
         CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
+        if (checkbox == null) return;
         checkbox.toggle();
 
         if (checkbox.isChecked()) {
