@@ -67,7 +67,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     /* NOTE: these are not constants, and may be multiplied by a scale factor */
     private static int TEXT_SIZE_MONTH_NUMBER = 32;
-    private static int TEXT_SIZE_LUNAR = 20;
+    private static int TEXT_SIZE_LUNAR = 12;
     private static int TEXT_SIZE_EVENT = 12;
     private static int TEXT_SIZE_EVENT_TITLE = 14;
     private static int TEXT_SIZE_MORE_EVENTS = 12;
@@ -85,7 +85,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
 
     private static int DEFAULT_EDGE_SPACING = 0;
     private static int SIDE_PADDING_MONTH_NUMBER = 4;
-    private static int TOP_PADDING_MONTH_NUMBER = 4;
+    private static int TOP_PADDING_MONTH_NUMBER = 2;
     private static int TOP_PADDING_WEEK_NUMBER = 4;
     private static int SIDE_PADDING_WEEK_NUMBER = 20;
     private static int DAY_SEPARATOR_OUTER_WIDTH = 0;
@@ -93,7 +93,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
     private static int DAY_SEPARATOR_VERTICAL_LENGTH = 53;
     private static int DAY_SEPARATOR_VERTICAL_LENGHT_PORTRAIT = 64;
     private static int MIN_WEEK_WIDTH = 50;
-    private static int LUNAR_PADDING_LUNAR = 2;
+    private static int LUNAR_PADDING_LUNAR = 1;
 
     private static int EVENT_X_OFFSET_LANDSCAPE = 38;
     private static int EVENT_Y_OFFSET_LANDSCAPE = 8;
@@ -370,6 +370,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
                 TEXT_SIZE_MORE_EVENTS *= mScale;
                 TEXT_SIZE_MONTH_NAME *= mScale;
                 TEXT_SIZE_WEEK_NUM *= mScale;
+                TEXT_SIZE_LUNAR *= mScale;
+                LUNAR_PADDING_LUNAR *= mScale;
                 DAY_SEPARATOR_OUTER_WIDTH *= mScale;
                 DAY_SEPARATOR_INNER_WIDTH *= mScale;
                 DAY_SEPARATOR_VERTICAL_LENGTH *= mScale;
@@ -760,6 +762,8 @@ public class MonthWeekEventsView extends SimpleWeekView {
                     int mOrientation = res.getConfiguration().orientation;
 
                     int num = 0;
+                    int lunarInfoHeight = (int) (mMonthNumPaint.descent()
+                            - mMonthNumPaint.ascent() + 0.5f);
                     for (int index = 0; index < lunarInfo.length; index++) {
                         String info = lunarInfo[index];
                         if (TextUtils.isEmpty(info)) continue;
@@ -768,7 +772,7 @@ public class MonthWeekEventsView extends SimpleWeekView {
                         int infoY = 0;
                         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                             infoX = x - mMonthNumHeight - TOP_PADDING_MONTH_NUMBER;
-                            infoY = y + (mMonthNumHeight + LUNAR_PADDING_LUNAR) * num;
+                            infoY = y + (lunarInfoHeight + LUNAR_PADDING_LUNAR) * num;
                         } else {
                             infoX = x;
                             infoY = y + (mMonthNumHeight + LUNAR_PADDING_LUNAR) * (num + 1);
