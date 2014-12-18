@@ -19,6 +19,7 @@ package com.android.calendar.alerts;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -44,6 +45,7 @@ import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.android.calendar.R;
 import com.android.calendar.Utils;
@@ -114,7 +116,13 @@ public class AlertReceiver extends BroadcastReceiver {
                 Intent geoIntent = createMapActivityIntent(context, urlSpans);
                 if (geoIntent != null) {
                     // Location was successfully found, so dismiss the shade and start maps.
-                    context.startActivity(geoIntent);
+                    try {
+                        context.startActivity(geoIntent);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(context, context.getString
+                                (R.string.no_map_activity_exception), Toast.LENGTH_LONG).show();
+                        Log.e(TAG,"ActivityNotFoundException:"+e);
+                    }
                     closeNotificationShade(context);
                 } else {
                     // No location was found, so update all notifications.
