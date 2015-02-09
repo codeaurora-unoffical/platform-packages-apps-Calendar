@@ -434,7 +434,10 @@ public class GlobalDismissManager extends BroadcastReceiver {
                 }
             }
         } finally {
-            eventCursor.close();
+            if (eventCursor != null) {
+                Log.d(TAG, "eventCursor that will be closed is not null");
+                eventCursor.close();
+            }
         }
         return eventsToCalendars;
     }
