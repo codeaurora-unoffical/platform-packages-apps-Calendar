@@ -148,8 +148,7 @@ public class GoogleCalendarUriIntentFilter extends Activity {
                     final String syncId = eidParts[0];
                     final String ownerAccount = eidParts[1];
                     if (debug) Log.d(TAG, "eidParts=" + syncId + "/" + ownerAccount);
-                    final String selection = Events._SYNC_ID + " LIKE \"%" + syncId + "\" AND "
-                            + Calendars.OWNER_ACCOUNT + " LIKE \"" + ownerAccount + "\"";
+                    final String selection = Events._SYNC_ID + " LIKE \"%" + syncId + "\"";
 
                     if (debug) Log.d(TAG, "selection: " + selection);
                     Cursor eventCursor = getContentResolver().query(Events.CONTENT_URI,
