@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.provider.CalendarContract;
 import android.util.Log;
+import com.android.calendar.RequestPermissionsActivity;
 
 /**
  * Service for clearing all scheduled alerts from the CalendarAlerts table and
@@ -48,6 +49,9 @@ public class InitAlarmsService extends IntentService {
         // Delay to avoid race condition of in-progress alarm scheduling in provider.
         SystemClock.sleep(DELAY_MS);
         Log.d(TAG, "Clearing and rescheduling alarms.");
+        if (!RequestPermissionsActivity.hasBasicPermissions()) {
+            return;
+        }
         try {
             getContentResolver().update(SCHEDULE_ALARM_REMOVE_URI, new ContentValues(), null,
                     null);

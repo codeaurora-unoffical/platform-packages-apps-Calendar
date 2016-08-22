@@ -21,6 +21,8 @@ package com.android.calendar;
 
 import android.Manifest.permission;
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 
 /**
  * Activity that requests permissions needed for activities exported from canlendar.
@@ -44,5 +46,24 @@ public class RequestPermissionsActivity extends RequestPermissionsActivityBase {
     public static boolean startPermissionActivity(Activity activity) {
         return startPermissionActivity(activity, REQUIRED_PERMISSIONS,
                 RequestPermissionsActivity.class);
+    }
+
+    public static boolean hasBasicPermissions() {
+        return hasPermissions(REQUIRED_PERMISSIONS);
+    }
+
+    public static boolean hasPermissions(final String[] strPermissions) {
+        for (final String permission : strPermissions) {
+            if (!hasPermission(permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean hasPermission(final String strPermission) {
+        final Context context = CalendarApplication.getApplication().getApplicationContext();
+        final int state = context.checkSelfPermission(strPermission);
+        return state == PackageManager.PERMISSION_GRANTED;
     }
 }
