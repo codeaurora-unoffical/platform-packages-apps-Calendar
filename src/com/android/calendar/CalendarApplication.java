@@ -19,10 +19,13 @@ package com.android.calendar;
 import android.app.Application;
 
 public class CalendarApplication extends Application {
+
+    public static CalendarApplication sCalendarApp = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
+        sCalendarApp = this;
         /*
          * Ensure the default values are set for any receiver, activity,
          * service, etc. of Calendar
@@ -36,5 +39,9 @@ public class CalendarApplication extends Application {
 
         // Initialize the registry mapping some custom behavior.
         ExtensionsFactory.init(getAssets());
+    }
+
+    public synchronized static CalendarApplication getApplication() {
+        return sCalendarApp;
     }
 }
