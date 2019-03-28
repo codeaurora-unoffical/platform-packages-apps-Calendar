@@ -61,9 +61,11 @@ public class CalendarAppWidgetProvider extends AppWidgetProvider {
             Log.d(TAG, "AppWidgetProvider got the intent: " + intent.toString());
         if (Utils.getWidgetUpdateAction(context).equals(action)) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            performUpdate(context, appWidgetManager,
-                    appWidgetManager.getAppWidgetIds(getComponentName(context)),
-                    null /* no eventIds */);
+            if(appWidgetManager != null){
+                performUpdate(context, appWidgetManager,
+                        appWidgetManager.getAppWidgetIds(getComponentName(context)),
+                        null /* no eventIds */);
+            }
         } else if (action.equals(Intent.ACTION_PROVIDER_CHANGED)
                 || action.equals(Intent.ACTION_TIME_CHANGED)
                 || action.equals(Intent.ACTION_TIMEZONE_CHANGED)
